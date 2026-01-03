@@ -1,23 +1,45 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import logo from "../assets/LOGO.png"
-import { signOut } from 'firebase/auth';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from '../utils/firebase';
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { addUser, removeUser } from '../utils/userSlice';
+import { USER_AVATAR } from '../utils/constants';
 function Header() {
   const navigate = useNavigate();
-  
+  const dispatch = useDispatch()
+
   const user = useSelector(store => store.user);
   const handleSignout=()=>{
     
     signOut(auth).then(() => {
         // Sign-out successful.
-        navigate("/")
       }).catch((error) => {
         // An error happened.
         navigate("/error")
       });
   }
+
+  
+  useEffect(()=>{
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    if (user) {
+      const {uid,email,displayName,photoURL} = user;
+      dispatch(addUser({uid:uid,email:email,displayName:displayName || "User",photoURL: USER_AVATAR}))
+      // ...
+      navigate("/browse")
+    } else {
+      // User is signed out
+      dispatch(removeUser())
+      navigate("/")
+    }
+  });
+// Unsubscibe when component unmount
+return ()=> unsubscribe();
+
+},[])
+
   return (
     <div className='absolute top-0 left-0 z-10 flex w-full items-center justify-between bg-linear-to-b from-black px-8 py-4'>
        <img className='w-44' src={logo} alt="Netflix-LOGO" />
