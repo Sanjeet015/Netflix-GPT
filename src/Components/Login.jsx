@@ -5,6 +5,7 @@ import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfi
 import {auth} from "../utils/firebase"
 import { useDispatch } from "react-redux";
 import { addUser } from "../utils/userSlice";
+import { BG_URL } from "../utils/constants";
 
 const Login = ()=>{
 
@@ -51,7 +52,7 @@ const Login = ()=>{
           // An error occurred
           setErrorMessage(error.message)
         });
-      console.log(user);
+      // console.log(user);
       // ...
       })
         .catch((error) => {
@@ -79,7 +80,7 @@ const Login = ()=>{
     <div>
      <Header/>
      <div className="absolute">
-      <img className="w-full h-full object-cover" src="https://assets.nflxext.com/ffe/siteui/vlv3/f86b16bf-4c16-411c-8357-22d79beed09c/web/IN-en-20251222-TRIFECTA-perspective_d4acb127-f63f-4a98-ad0b-4317b0b3e500_large.jpg" alt="Background-image" />
+      <img className="w-full h-full object-cover" src={BG_URL} alt="Background-image" />
      </div>
 
      <form onSubmit={(e)=>e.preventDefault()} action="" className="absolute left-0 right-0 mx-auto my-36 w-5/12 bg-black/70 text-center rounded-sm">

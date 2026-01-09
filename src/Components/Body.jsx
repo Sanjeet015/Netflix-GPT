@@ -1,6 +1,7 @@
 
 import Login from './Login'
 import Browse from './Browse'
+import Footer from './Footer'
 import {createBrowserRouter, RouterProvider} from "react-router-dom"
 import {useDispatch} from "react-redux"
 
@@ -11,7 +12,7 @@ const Body = () => {
   const appRouter = createBrowserRouter([
     {
       path:"/",
-      element:<Login/>
+      element:<><Login/><Footer/></>
     },
     {
       path:"/browse",
