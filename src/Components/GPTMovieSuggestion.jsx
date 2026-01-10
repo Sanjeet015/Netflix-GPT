@@ -52,8 +52,8 @@ function GPTMovieSuggestion() {
   }
 
   return (
-    <div className='bg-black bg-opacity-90 text-white py-8 px-6 my-4'>
-      <h1 className='text-3xl font-bold mb-6'>
+    <div className='bg-black bg-opacity-90 text-white py-8 px-6 my-4 pointer-events-auto'>
+      <h1 className='text-3xl font-bold mb-6 text-center'>
         🎬 Recommendations for: <span className='text-red-500'>"{searchQuery}"</span>
       </h1>
       

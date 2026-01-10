@@ -1,106 +1,137 @@
-import { useRef, useState } from "react"
-import Header from "./Header"
-import { checkValidateData } from "../utils/validate"
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "firebase/auth";
-import {auth} from "../utils/firebase"
+import { useRef, useState } from "react";
+import Header from "./Header";
+import { checkValidateData } from "../utils/validate";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  updateProfile,
+} from "firebase/auth";
+import { auth } from "../utils/firebase";
 import { useDispatch } from "react-redux";
 import { addUser } from "../utils/userSlice";
 import { BG_URL } from "../utils/constants";
 
-const Login = ()=>{
+const Login = () => {
+  const [isSignIn, setIsSignIn] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const [isSignIn,setIsSignIn]=useState(true)
-  const [errorMessage,setErrorMessage]=useState("")
-  const name=useRef(null);
+  const name = useRef(null);
   const email = useRef(null);
   const password = useRef(null);
-  const confirmPassword = useRef(null)
-  const dispatch = useDispatch()
-   
+  const confirmPassword = useRef(null);
 
-  const handleButtonClick = ()=>{
+  const dispatch = useDispatch();
+
+  const handleButtonClick = () => {
     const passwordValue = password.current.value;
     const confirmPasswordValue = confirmPassword.current?.value;
-    
-    let msg = checkValidateData(email.current.value,passwordValue);
 
-    if(!isSignIn && passwordValue !== confirmPasswordValue){
-      msg="Password does not match";
+    let msg = checkValidateData(email.current.value, passwordValue);
+
+    if (!isSignIn && passwordValue !== confirmPasswordValue) {
+      msg = "Password does not match";
     }
+
     setErrorMessage(msg);
-    // console.log(msg);
+    if (msg) return;
 
-    if(msg) return;
-
-    //Sign in Sign up logic
-
-    if(!isSignIn){
-      //Sign up
+    if (!isSignIn) {
       createUserWithEmailAndPassword(auth, email.current.value, passwordValue)
-        .then((userCredential) => {
-      // Signed up 
-      const user = userCredential.user;
-      updateProfile(user, {
-      displayName: name.current.value})
-        .then(() => {
-          // Profile updated!
-          const {uid,email,displayName,photoURL} = auth.currentUser;
-             dispatch(
-              addUser({uid:uid,email:email,displayName:displayName,photoURL: photoURL})
-             )
-        }).catch((error) => {
-          // An error occurred
-          setErrorMessage(error.message)
-        });
-      // console.log(user);
-      // ...
-      })
-        .catch((error) => {
-          setErrorMessage(error.code+"-"+error.message)
-          // ..
-        });
-    }else{
-      signInWithEmailAndPassword(auth, email.current.value, passwordValue)
-        .then((userCredential) => {
-          // Signed in 
-          const user = userCredential.user;
-          // ...
+        .then(({ user }) => {
+          updateProfile(user, {
+            displayName: name.current.value,
+          }).then(() => {
+            const { uid, email, displayName, photoURL } = auth.currentUser;
+            dispatch(addUser({ uid, email, displayName, photoURL }));
+          });
         })
-        .catch((error) => {
-         if(error.code) setErrorMessage("Invalid Credential");
-        });
+        .catch((error) => setErrorMessage(error.message));
+    } else {
+      signInWithEmailAndPassword(auth, email.current.value, passwordValue)
+        .catch(() => setErrorMessage("Invalid credentials"));
     }
-  }
+  };
 
-  const toggleSignIn = ()=>{
-    setIsSignIn(!isSignIn)
-    setErrorMessage("")
-  }
   return (
-    <div>
-     <Header/>
-     <div className="absolute">
-      <img className="w-full h-full object-cover" src={BG_URL} alt="Background-image" />
-     </div>
+    <div className="relative min-h-screen flex flex-col">
+      {/* Background */}
+      <div className="absolute inset-0 -z-50">
+        <img className="w-full h-full object-cover" src={BG_URL} alt="Background" />
+        <div className="absolute inset-0 bg-black/60"></div>
+      </div>
 
-     <form onSubmit={(e)=>e.preventDefault()} action="" className="absolute left-0 right-0 mx-auto my-36 w-5/12 bg-black/70 text-center rounded-sm">
-      <h1 className="text-3xl font-bold text-left px-16 text-white pb-8">{isSignIn?"Sign In":"Sign Up"}</h1>
-      {!isSignIn && <input ref={name} type="text" placeholder="Full Name" className="w-9/12 p-4 m-2 cursor-pointer bg-black/90
-      text-white  border border-gray-400 rounded-sm"/>
-      }
-      <input ref={email} type="email" placeholder="Email Address" className="w-9/12 p-4 m-2 cursor-pointer bg-black/90
-      text-white  border border-gray-400 rounded-sm"/>
-      <input ref={password} type="password" placeholder="Password" className="w-9/12 p-4 m-2 cursor-pointer bg-black/90
-      text-white border border-gray-400 rounded-sm"/>
-      {!isSignIn && <input ref={confirmPassword} type="password" placeholder="Confirm Password" className="w-9/12 p-4 m-2 cursor-pointer bg-black/90
-      text-white border border-gray-400 rounded-sm"/>}
-      <p className="text-red-500 px-16 my-4 text-left font-bold text-lg pt-4">{errorMessage}</p>
-      <button className="w-9/12 p-2 my-8 bg-red-700  rounded-sm cursor-pointer" onClick={handleButtonClick}>{isSignIn?"Sign In":"Sign Up"}</button>
+      {/* Header */}
+      <Header />
 
-      <p className="text-white px-16 my-4 text-left cursor-pointer" onClick={toggleSignIn}>{isSignIn?"New to Netflix?Sign up now.":"Already an user?Sign in now."}</p>
-     </form>
+      {/* Main Content */}
+      <main className="flex-grow flex justify-center items-start px-4 pt-28 pb-8">
+        <form
+          onSubmit={(e) => e.preventDefault()}
+          className="w-full max-w-md bg-black/70 rounded-sm p-8 text-center"
+        >
+          <h1 className="text-3xl font-bold text-white mb-6">
+            {isSignIn ? "Sign In" : "Sign Up"}
+          </h1>
+
+          {!isSignIn && (
+            <input
+              ref={name}
+              type="text"
+              placeholder="Full Name"
+              className="w-full p-3 mb-4 bg-black/90 text-white border border-gray-400 rounded-sm"
+            />
+          )}
+
+          <input
+            ref={email}
+            type="email"
+            placeholder="Email Address"
+            className="w-full p-3 mb-4 bg-black/90 text-white border border-gray-400 rounded-sm"
+          />
+
+          <input
+            ref={password}
+            type="password"
+            placeholder="Password"
+            className="w-full p-3 mb-4 bg-black/90 text-white border border-gray-400 rounded-sm"
+          />
+
+          {!isSignIn && (
+            <input
+              ref={confirmPassword}
+              type="password"
+              placeholder="Confirm Password"
+              className="w-full p-3 mb-4 bg-black/90 text-white border border-gray-400 rounded-sm"
+            />
+          )}
+
+          {errorMessage && (
+            <p className="text-red-500 font-semibold mb-4">{errorMessage}</p>
+          )}
+
+          <button
+            type="button"
+            onClick={handleButtonClick}
+            className="w-full bg-red-700 hover:bg-red-800 text-white p-3 rounded-sm font-semibold"
+          >
+            {isSignIn ? "Sign In" : "Sign Up"}
+          </button>
+
+          <p
+            className="text-gray-300 mt-6 cursor-pointer"
+            onClick={() => {
+              setIsSignIn(!isSignIn);
+              setErrorMessage("");
+            }}
+          >
+            {isSignIn
+              ? "New to Netflix? Sign up now."
+              : "Already a user? Sign in now."}
+          </p>
+        </form>
+      </main>
     </div>
-  )
-}
+  );
+};
 
-export default Login 
+export default Login;

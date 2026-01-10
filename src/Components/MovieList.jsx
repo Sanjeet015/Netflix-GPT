@@ -8,7 +8,7 @@ function MovieList({title,movies}) {
       <h1 className='text-xl font-semibold mb-2'>
         {title}
       </h1>
-      <div className='flex overflow-x-scroll scrollbar-hide gap-8'>
+      <div className='flex overflow-x-scroll scrollbar-hide gap-4 md:gap-8'>
         {movies?.map(movie=><MovieCard key={movie.id} poster_path={movie.poster_path}/>)}
       </div>
     </div>

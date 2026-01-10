@@ -32,7 +32,7 @@ function GPTSearchBar() {
   }
   return (
     
-    <div className='pt-[10%] flex justify-center'>
+    <div className='pt-[10%] md:pt-[10%] flex justify-center'>
       <form className="mx-auto mt-6 w-full max-w-3xl rounded-sm bg-black/80 p-2 backdrop-blur-md" onSubmit={(e)=>e.preventDefault()}>
         <div className="grid grid-cols-12 gap-2" >
           

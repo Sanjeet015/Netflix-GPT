@@ -13,6 +13,9 @@ function Header() {
 
   const user = useSelector(store => store.user);
   const gptSearchValue = useSelector(store => store.gpt.showGptSearch)
+  
+  // console.log("Header rendered - User:", user, "GPT Search:", gptSearchValue);
+  
   const handleSignout=()=>{
     
     signOut(auth).then(() => {
@@ -24,7 +27,7 @@ function Header() {
   }
 
   const handleGPTSearchclick = ()=>{
-    dispatch(toggleGptSearchView())
+    dispatch(toggleGptSearchView());
   }
 
   
@@ -47,7 +50,7 @@ return ()=> unsubscribe();
 },[])
 
   return (
-    <div className='absolute top-0 left-0 z-10 flex w-full items-center justify-between bg-linear-to-b from-black px-8 py-4'>
+    <div className='absolute top-0 left-0 z-10 flex flex-col w-full items-center justify-between bg-linear-to-b md:flex-row'>
        <img className='w-44' src={logo} alt="Netflix-LOGO" />
        <div className='flex'>
         {user && <button className='h-8 px-4 rounded-sm text-white text-sm cursor-pointer mx-2 bg-red-600' onClick={handleGPTSearchclick}>{gptSearchValue?"Home Page":"GPT Search"}</button>}
