@@ -14,10 +14,10 @@ function GPTMovieSuggestion() {
     const fetchMoviesData = async () => {
       setLoading(true)
       try {
-        // Parse movie names from Gemini response (comma-separated)
+        // Parse movie names from Gemini response (comma-separated), cleaning any bullets or markdown
         const movieList = movieNames
           .split(',')
-          .map(name => name.trim())
+          .map(name => name.replace(/[*_#`]/g, '').replace(/^\s*\d+[\.\-\)]\s*/, '').trim())
           .filter(name => name.length > 0)
 
         // Fetch each movie from TMDB
